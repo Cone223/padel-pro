@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { courtsApi } from '../services/api'
 import { useToast } from '../context/ToastContext'
+import { getImageUrl } from '../utils/imageUrl'
 
 const CourtCard = ({ court }) => (
   <Link to={`/cancha/${court._id}`} className="card-hover group overflow-hidden flex flex-col hover:-translate-y-1 transition-all duration-300">
     <div className="aspect-video bg-dark-700 overflow-hidden relative">
       {court.images?.[0] ? (
-        <img src={court.images[0]} alt={court.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        <img src={getImageUrl(court.images[0])} alt={court.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
       ) : (
         <div className="w-full h-full flex items-center justify-center text-4xl text-dark-500">🎾</div>
       )}
