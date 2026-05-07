@@ -6,25 +6,32 @@ require('dotenv').config();
 
 const app = express();
 
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://padel-pro-one.vercel.app'
-];
-
+// CORS
 app.use(cors({
   origin: function (origin, callback) {
 
+    // Postman, server-to-server, etc.
     if (!origin) {
       return callback(null, true);
     }
 
-    if (allowedOrigins.includes(origin)) {
+    // localhost
+    if (origin.includes('localhost')) {
       return callback(null, true);
     }
 
-    return callback(new Error('CORS not allowed'));
+    // cualquier deploy de Vercel
+    if (origin.includes('vercel.app')) {
+      return callback(null, true);
+    }
+
+    return callback(null, false);
+
   },
-  credentials: true
+
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.options('*', cors());
@@ -33,6 +40,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+// Mongo
 const connectDB = async () => {
   try {
 
@@ -52,6 +60,7 @@ const connectDB = async () => {
 
 connectDB();
 
+// Routes
 app.use('/api/auth', require('./routes/userRoutes'));
 app.use('/api/courts', require('./routes/courtRoutes'));
 app.use('/api/bookings', require('./routes/bookingRoutes'));
@@ -59,6 +68,7 @@ app.use('/api/tournaments', require('./routes/tournamentRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 
+// Health
 app.get('/api', (req, res) => {
   res.json({
     message: '🎾 PadelFinder API',
@@ -66,6 +76,7 @@ app.get('/api', (req, res) => {
   });
 });
 
+// 404
 app.all('*', (req, res) => {
   res.status(404).json({
     status: 'error',
@@ -73,6 +84,7 @@ app.all('*', (req, res) => {
   });
 });
 
+// Error handler
 app.use((err, req, res, next) => {
 
   console.error(err);
