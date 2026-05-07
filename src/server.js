@@ -6,7 +6,6 @@ require('dotenv').config();
 
 const app = express();
 
-// CORS
 const allowedOrigins = [
   'http://localhost:5173',
   'https://padel-pro-one.vercel.app'
@@ -14,7 +13,7 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Postman, server-to-server, etc.
+
     if (!origin) {
       return callback(null, true);
     }
@@ -28,38 +27,31 @@ app.use(cors({
   credentials: true
 }));
 
-// Preflight
 app.options('*', cors());
 
-// Body parser
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// Static
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// Mongo
 const connectDB = async () => {
   try {
+
     const conn = await mongoose.connect(
-      process.env.MONGODB_URI || 'mongodb://localhost:27017/padelfinder',
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-      }
+      process.env.MONGODB_URI || 'mongodb://localhost:27017/padelfinder'
     );
 
     console.log('✅ MongoDB conectado:', conn.connection.host);
 
   } catch (err) {
-    console.error('❌ Error de conexión a MongoDB:', err.message);
+
+    console.error('❌ Error Mongo:', err.message);
     process.exit(1);
+
   }
 };
 
 connectDB();
 
-// Routes
 app.use('/api/auth', require('./routes/userRoutes'));
 app.use('/api/courts', require('./routes/courtRoutes'));
 app.use('/api/bookings', require('./routes/bookingRoutes'));
@@ -67,15 +59,13 @@ app.use('/api/tournaments', require('./routes/tournamentRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 
-// Health
 app.get('/api', (req, res) => {
   res.json({
-    message: '🎾 PadelFinder API v2.0',
+    message: '🎾 PadelFinder API',
     status: 'running'
   });
 });
 
-// 404
 app.all('*', (req, res) => {
   res.status(404).json({
     status: 'error',
@@ -83,17 +73,15 @@ app.all('*', (req, res) => {
   });
 });
 
-// Error handler
 app.use((err, req, res, next) => {
-  console.error('Error:', err);
+
+  console.error(err);
 
   res.status(err.status || 500).json({
     status: 'error',
-    message:
-      process.env.NODE_ENV === 'production'
-        ? 'Error interno del servidor'
-        : err.message
+    message: err.message
   });
+
 });
 
 const PORT = process.env.PORT || 5000;
