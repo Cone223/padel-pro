@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { courtsApi, bookingsApi } from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
+import { getImageUrl } from '../utils/imageUrl'
 
 const HOURS = Array.from({ length: 14 }, (_, i) => {
   const h = i + 8
@@ -99,7 +100,7 @@ export default function CanchaDetalle() {
       <div className="card overflow-hidden mb-8">
         <div className="aspect-[16/6] relative bg-dark-700">
           {court.images?.length > 0 ? (
-            <img src={court.images[imgIdx]} alt={court.name} className="w-full h-full object-cover" />
+            <img src={getImageUrl(court.images[imgIdx])} alt={court.name} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-8xl text-dark-600">🎾</div>
           )}
