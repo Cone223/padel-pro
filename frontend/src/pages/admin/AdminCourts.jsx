@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { adminApi, courtsApi } from '../../services/api'
 import { useToast } from '../../context/ToastContext'
+import { getImageUrl } from '../../utils/imageUrl'
 
 const FACILITIES = ['vestuarios', 'duchas', 'bar', 'iluminacion', 'parking', 'wifi']
 const COURT_TYPES = ['cristal', 'hormigon', 'cesped artificial']
@@ -132,7 +133,7 @@ const CourtModal = ({ court, onClose, onSave }) => {
               <div className="flex flex-wrap gap-3 mb-3 mt-2">
                 {existingImages.map((url, i) => (
                   <div key={`ex-${i}`} className="relative w-24 h-24 rounded-xl overflow-hidden border border-dark-500 group">
-                    <img src={url} alt="" className="w-full h-full object-cover" />
+                    <img src={getImageUrl(url)} alt="" className="w-full h-full object-cover" />
                     <button
                       type="button"
                       onClick={() => removeExistingImage(i)}
@@ -278,7 +279,7 @@ export default function AdminCourts() {
             <div key={court._id} className="card overflow-hidden flex flex-col">
               <div className="aspect-video bg-dark-700 relative">
                 {court.images?.[0]
-                  ? <img src={court.images[0]} alt={court.name} className="w-full h-full object-cover" />
+                  ? <img src={getImageUrl(court.images[0])} alt={court.name} className="w-full h-full object-cover" />
                   : <div className="w-full h-full flex items-center justify-center text-4xl text-dark-600">🎾</div>
                 }
                 <div className="absolute top-2 right-2">
