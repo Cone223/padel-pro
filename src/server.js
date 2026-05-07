@@ -10,23 +10,26 @@ const app = express();
 app.use(cors({
   origin: function (origin, callback) {
 
-    // Postman, server-to-server, etc.
-    if (!origin) {
-      return callback(null, true);
-    }
+    // herramientas tipo Postman o server-to-server
+    if (!origin) return callback(null, true);
 
     // localhost
-    if (origin.includes('localhost')) {
+    if (origin.includes('localhost')) return callback(null, true);
+
+    // Vercel
+    if (origin.includes('vercel.app')) return callback(null, true);
+
+    // opcional: dominios exactos si querés más control
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'https://padel-pro-one.vercel.app'
+    ];
+
+    if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
 
-    // cualquier deploy de Vercel
-    if (origin.includes('vercel.app')) {
-      return callback(null, true);
-    }
-
-    return callback(null, false);
-
+    return callback(new Error('CORS not allowed'), false);
   },
 
   credentials: true,
